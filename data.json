@@ -1,11 +1,10 @@
 {
-  "ip": "123.123.123.123:27015",
-  "map": "de_dust2",
-  "status": "ONLINE",
+  "serverName": "RandomGuy CS 1.6 Server",
+  "ip": "123.45.67.89:27015",
+  "description": "Vítejte na RandomGuy CS 1.6 serveru! Přidejte se k nám a bavte se.",
   "rules": [
-    "Žádné cheaty – BAN",
-    "Respektuj adminy",
-    "Nezneužívej mikrofon / chat"
-  ],
-  "contact": "📧 E-mail: random@cs16.cz<br>🎮 Steam: <a href='#'>randomguy</a><br>💬 Discord: <a href='#'>discord.gg/random</a>"
+    "Žádný cheatování",
+    "Respektuj ostatní hráče",
+    "Udržuj přátelskou atmosféru"
+  ]
 }
