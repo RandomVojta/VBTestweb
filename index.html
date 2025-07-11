@@ -30,26 +30,30 @@
   </footer>
 
   <script>
-    fetch('data.json')
-      .then(response => response.json())
+    fetch('./data.json')
+      .then(response => {
+        if (!response.ok) throw new Error('Chyba při načítání data.json');
+        return response.json();
+      })
       .then(data => {
-        document.getElementById('serverName').textContent = data.serverName;
-        document.getElementById('ip').textContent = data.ip;
-        document.getElementById('description').textContent = data.description;
+        document.getElementById('serverName').textContent = data.serverName || 'Název chybí';
+        document.getElementById('ip').textContent = data.ip || 'IP chybí';
+        document.getElementById('description').textContent = data.description || 'Popis chybí';
 
         const rulesList = document.getElementById('rules');
         rulesList.innerHTML = '';
-        data.rules.forEach(rule => {
+        (data.rules || []).forEach(rule => {
           const li = document.createElement('li');
           li.textContent = rule;
           rulesList.appendChild(li);
         });
 
-        document.getElementById('contactEmail').textContent = data.contact.email;
-        document.getElementById('contactDiscord').textContent = data.contact.discord;
+        const contact = data.contact || {};
+        document.getElementById('contactEmail').textContent = contact.email || 'Email chybí';
+        document.getElementById('contactDiscord').textContent = contact.discord || 'Discord chybí';
       })
-      .catch(() => {
-        document.body.innerHTML = '<p>Chyba při načítání dat.</p>';
+      .catch(error => {
+        document.body.innerHTML = `<p style="color:red;">${error.message}</p>`;
       });
   </script>
 </body>
