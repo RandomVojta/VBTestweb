@@ -6,5 +6,9 @@
     "Žádný cheatování",
     "Respektuj ostatní hráče",
     "Udržuj přátelskou atmosféru"
-  ]
+  ],
+  "contact": {
+    "email": "kontakt@randomguy.cz",
+    "discord": "RandomGuy#1234"
+  }
 }
