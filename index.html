@@ -2,40 +2,45 @@
 <html lang="cs">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>RandomGuy CS 1.6 Server</title>
-  <link rel="stylesheet" href="style.css">
+  <link rel="stylesheet" href="/VBTestweb/style.css" />
 </head>
 <body>
-  <div class="container">
-    <h1 id="title">RandomGuy CS 1.6 Server</h1>
-    <p><strong>IP:</strong> <span id="ip"></span></p>
-    <p><strong>Mapa:</strong> <span id="map"></span></p>
-    <p><strong>Stav:</strong> <span id="status"></span></p>
+  <header>
+    <h1 id="serverName">Načítání...</h1>
+  </header>
 
-    <h2>Pravidla</h2>
+  <main>
+    <p><strong>IP serveru:</strong> <span id="ip">Načítání...</span></p>
+    <p id="description">Načítání popisu...</p>
+
+    <h3>Pravidla serveru:</h3>
     <ul id="rules"></ul>
+  </main>
 
-    <h2>Kontakt</h2>
-    <p id="contact"></p>
-
-    <a href="cms.html">🛠️ Editor obsahu</a>
-  </div>
+  <footer>
+    <p>© 2025 RandomGuy</p>
+  </footer>
 
   <script>
-    fetch("data.json")
-      .then(res => res.json())
+    fetch('data.json')
+      .then(response => response.json())
       .then(data => {
-        document.getElementById("ip").textContent = data.ip;
-        document.getElementById("map").textContent = data.map;
-        document.getElementById("status").textContent = data.status;
-        document.getElementById("contact").innerHTML = data.contact;
-        const rulesList = document.getElementById("rules");
+        document.getElementById('serverName').textContent = data.serverName;
+        document.getElementById('ip').textContent = data.ip;
+        document.getElementById('description').textContent = data.description;
+
+        const rulesList = document.getElementById('rules');
+        rulesList.innerHTML = '';
         data.rules.forEach(rule => {
-          const li = document.createElement("li");
+          const li = document.createElement('li');
           li.textContent = rule;
           rulesList.appendChild(li);
         });
+      })
+      .catch(() => {
+        document.body.innerHTML = '<p>Chyba při načítání dat.</p>';
       });
   </script>
 </body>
