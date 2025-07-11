@@ -1,0 +1,61 @@
+<!DOCTYPE html>
+<html lang="cs">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Editor – RandomGuy CS 1.6 Server</title>
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="container">
+    <h1 id="title" contenteditable="true">RandomGuy CS 1.6 Server</h1>
+    <p><strong>IP:</strong> <span id="ip" contenteditable="true"></span></p>
+    <p><strong>Mapa:</strong> <span id="map" contenteditable="true"></span></p>
+    <p><strong>Stav:</strong> <span id="status" contenteditable="true"></span></p>
+
+    <h2>Pravidla</h2>
+    <ul id="rules" contenteditable="true"></ul>
+
+    <h2>Kontakt</h2>
+    <p id="contact" contenteditable="true"></p>
+
+    <button onclick="saveData()">💾 Uložit změny</button>
+    <a href="index.html">← Zpět</a>
+  </div>
+
+  <script>
+    fetch("data.json")
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("ip").textContent = data.ip;
+        document.getElementById("map").textContent = data.map;
+        document.getElementById("status").textContent = data.status;
+        document.getElementById("contact").innerHTML = data.contact;
+        const rulesList = document.getElementById("rules");
+        rulesList.innerHTML = "";
+        data.rules.forEach(rule => {
+          const li = document.createElement("li");
+          li.textContent = rule;
+          rulesList.appendChild(li);
+        });
+      });
+
+    function saveData() {
+      const rulesList = document.querySelectorAll("#rules li");
+      const rules = Array.from(rulesList).map(li => li.textContent.trim());
+      const data = {
+        ip: document.getElementById("ip").textContent.trim(),
+        map: document.getElementById("map").textContent.trim(),
+        status: document.getElementById("status").textContent.trim(),
+        contact: document.getElementById("contact").innerHTML.trim(),
+        rules: rules
+      };
+      const blob = new Blob([JSON.stringify(data, null, 2)], {type : 'application/json'});
+      const a = document.createElement("a");
+      a.href = URL.createObjectURL(blob);
+      a.download = "data.json";
+      a.click();
+    }
+  </script>
+</body>
+</html>
