@@ -45,12 +45,14 @@
     fetch('data.json')
       .then(res => res.json())
       .then(data => {
-        document.getElementById('serverNameInput').value = data.serverName;
-        document.getElementById('ipInput').value = data.ip;
-        document.getElementById('descriptionInput').value = data.description;
-        document.getElementById('rulesInput').value = data.rules.join('\n');
-        document.getElementById('emailInput').value = data.contact.email;
-        document.getElementById('discordInput').value = data.contact.discord;
+        document.getElementById('serverNameInput').value = data.serverName || '';
+        document.getElementById('ipInput').value = data.ip || '';
+        document.getElementById('descriptionInput').value = data.description || '';
+        document.getElementById('rulesInput').value = (data.rules || []).join('\n');
+
+        const contact = data.contact || {};
+        document.getElementById('emailInput').value = contact.email || '';
+        document.getElementById('discordInput').value = contact.discord || '';
       })
       .catch(() => {
         alert('Chyba při načítání dat.');
