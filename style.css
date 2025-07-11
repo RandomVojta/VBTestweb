@@ -46,3 +46,30 @@ a {
 a:hover {
   text-decoration: underline;
 }
+
+/* CMS form styles */
+input, textarea {
+  width: 100%;
+  max-width: 600px;
+  background-color: #222;
+  border: 1px solid #4caf50;
+  border-radius: 4px;
+  padding: 8px;
+  color: #eee;
+  margin-bottom: 15px;
+  font-size: 1rem;
+}
+
+button {
+  background-color: #4caf50;
+  border: none;
+  color: white;
+  padding: 10px 20px;
+  border-radius: 5px;
+  cursor: pointer;
+  font-size: 1rem;
+}
+
+button:hover {
+  background-color: #388e3c;
+}
