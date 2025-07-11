@@ -2,66 +2,41 @@
 <html lang="cs">
 <head>
   <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>RandomGuy CS 1.6 Server</title>
-  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <h1> <span class="accent">RandomGuy</span> - CS 1.6 Server</h1>
-    <nav>
-      <a href="#status">Server</a>
-      <a href="#download">Download</a>
-      <a href="#news">Novinky</a>
-      <a href="#rules">Pravidla</a>
-      <a href="#contact">Kontakt</a>
-    </nav>
-  </header>
+  <div class="container">
+    <h1 id="title">RandomGuy CS 1.6 Server</h1>
+    <p><strong>IP:</strong> <span id="ip"></span></p>
+    <p><strong>Mapa:</strong> <span id="map"></span></p>
+    <p><strong>Stav:</strong> <span id="status"></span></p>
 
-  <main>
-    <section id="status">
-      <h2>🎮 Server Info</h2>
-      <p><strong>IP:</strong> 123.123.123.123:27015</p>
-      <p><strong>Stav:</strong> <span class="online">ONLINE</span></p>
-      <p><strong>Mapy:</strong> de_dust2, cs_italy</p>
-      <p><strong>Mod:</strong> Classic + AWP pátek</p>
-    </section>
+    <h2>Pravidla</h2>
+    <ul id="rules"></ul>
 
-    <section id="download">
-      <h2>📦 Ke stažení</h2>
-      <ul>
-        <li><a href="#">Counter-Strike 1.6 (no-Steam)</a></li>
-        <li><a href="#">TeamSpeak 3 Client</a></li>
-      </ul>
-    </section>
+    <h2>Kontakt</h2>
+    <p id="contact"></p>
 
-    <section id="news">
-      <h2>📰 Novinky</h2>
-      <ul>
-        <li>🟡 10.07.2025 – Přidána nová mapa aim_map</li>
-        <li>🟡 01.07.2025 – Server opět online!</li>
-        <li>🟡 25.06.2025 – Nové pravidla pro AWP</li>
-      </ul>
-    </section>
+    <a href="cms.html">🛠️ Editor obsahu</a>
+  </div>
 
-    <section id="rules">
-      <h2>📜 Pravidla serveru</h2>
-      <ol>
-        <li>Necheatuj – BAN!</li>
-        <li>Chovej se slušně</li>
-        <li>Nerespektování admina = kick/ban</li>
-      </ol>
-    </section>
-
-    <section id="contact">
-      <h2>📧 Kontakt</h2>
-      <p>Steam: <a href="#">steamcommunity.com/id/shadowadmin</a></p>
-      <p>Discord: <a href="#">discord.gg/shadowzone</a></p>
-    </section>
-  </main>
-
-  <footer>
-    <p>© 2025 ShadowZone Server | Vytvořeno s <3 pro komunitu CS 1.6</p>
-  </footer>
+  <script>
+    fetch("data.json")
+      .then(res => res.json())
+      .then(data => {
+        document.getElementById("ip").textContent = data.ip;
+        document.getElementById("map").textContent = data.map;
+        document.getElementById("status").textContent = data.status;
+        document.getElementById("contact").innerHTML = data.contact;
+        const rulesList = document.getElementById("rules");
+        data.rules.forEach(rule => {
+          const li = document.createElement("li");
+          li.textContent = rule;
+          rulesList.appendChild(li);
+        });
+      });
+  </script>
 </body>
 </html>
