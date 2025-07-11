@@ -42,8 +42,11 @@
   <button id="exportBtn">Exportovat JSON</button>
 
   <script>
-    fetch('data.json')
-      .then(res => res.json())
+    fetch('./data.json')
+      .then(res => {
+        if (!res.ok) throw new Error('Chyba při načítání data.json');
+        return res.json();
+      })
       .then(data => {
         document.getElementById('serverNameInput').value = data.serverName || '';
         document.getElementById('ipInput').value = data.ip || '';
@@ -63,14 +66,17 @@
         serverName: document.getElementById('serverNameInput').value,
         ip: document.getElementById('ipInput').value,
         description: document.getElementById('descriptionInput').value,
-        rules: document.getElementById('rulesInput').value.split('\n').filter(line => line.trim() !== ''),
+        rules: document.getElementById('rulesInput').value
+          .split('\n')
+          .map(line => line.trim())
+          .filter(line => line !== ''),
         contact: {
           email: document.getElementById('emailInput').value,
           discord: document.getElementById('discordInput').value
         }
       };
 
-      const blob = new Blob([JSON.stringify(data, null, 2)], {type: 'application/json'});
+      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
       const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
       a.href = url;
