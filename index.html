@@ -4,7 +4,7 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>RandomGuy CS 1.6 Server</title>
-  <link rel="stylesheet" href="/VBTestweb/style.css" />
+  <link rel="stylesheet" href="style.css" />
 </head>
 <body>
   <header>
@@ -17,6 +17,12 @@
 
     <h3>Pravidla serveru:</h3>
     <ul id="rules"></ul>
+
+    <h3>Kontakt:</h3>
+    <ul>
+      <li>Email: <span id="contactEmail"></span></li>
+      <li>Discord: <span id="contactDiscord"></span></li>
+    </ul>
   </main>
 
   <footer>
@@ -38,6 +44,9 @@
           li.textContent = rule;
           rulesList.appendChild(li);
         });
+
+        document.getElementById('contactEmail').textContent = data.contact.email;
+        document.getElementById('contactDiscord').textContent = data.contact.discord;
       })
       .catch(() => {
         document.body.innerHTML = '<p>Chyba při načítání dat.</p>';
