@@ -2,111 +2,107 @@
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>RandomGuy CMS Editor</title>
   <style>
-    body { font-family: sans-serif; padding: 2rem; max-width: 800px; margin: auto; background: #f4f4f4; }
-    h1 { color: #333; }
-    input, textarea { width: 100%; padding: 0.5rem; margin-bottom: 1rem; }
-    button { padding: 0.5rem 1rem; font-size: 1rem; cursor: pointer; }
-    #loginBtn { background: #2ea44f; color: white; border: none; }
-    #saveBtn { background: #0366d6; color: white; border: none; }
+    body {
+      font-family: Arial, sans-serif;
+      max-width: 600px;
+      margin: 2rem auto;
+      padding: 1rem;
+      background: #f4f4f4;
+    }
+    input, textarea, button {
+      width: 100%;
+      margin-bottom: 1rem;
+      padding: 0.5rem;
+      font-size: 1rem;
+    }
+    label {
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
   <h1>RandomGuy CMS Editor</h1>
 
-  <button id="loginBtn">Přihlásit se přes GitHub</button>
+  <button id="login">Přihlásit se přes GitHub</button>
 
-  <div id="editor" style="display:none">
-    <label>Název serveru</label>
-    <input id="serverName">
+  <div id="editor" style="display:none;">
+    <label>Název serveru:</label>
+    <input id="serverName" type="text">
 
-    <label>IP adresa</label>
-    <input id="ip">
+    <label>IP adresa:</label>
+    <input id="ip" type="text">
 
-    <label>Popis</label>
+    <label>Popis:</label>
     <textarea id="description"></textarea>
 
-    <label>Pravidla (oddělená novým řádkem)</label>
-    <textarea id="rules"></textarea>
+    <label>Pravidla (oddělená ","):</label>
+    <input id="rules" type="text">
 
-    <label>Email</label>
-    <input id="email">
+    <label>Kontakt email:</label>
+    <input id="email" type="text">
 
-    <label>Discord</label>
-    <input id="discord">
+    <label>Kontakt Discord:</label>
+    <input id="discord" type="text">
 
-    <button id="saveBtn">💾 Uložit změny</button>
+    <button id="save">Uložit změny</button>
   </div>
 
   <script>
-    const clientId = 'Ov23ligMcno6gMm5OkHn'; // ← vlož svůj Client ID z GitHub OAuth
-    const repo = 'VBTestweb';       // ← název tvého repozitáře
-    const owner = 'RandomVojta';     // ← tvůj GitHub username
+    const clientId = 'Ov23ligMcno6gMm5OkHn'; // ZDE VLOZ SVUJ CLIENT ID
+    const owner = 'RandomVojta'; // GitHub username
+    const repo = 'VBTestweb'; // Repo s data.json
     const filename = 'data.json';
 
-    const token = sessionStorage.getItem('gh_token');
-    const params = new URLSearchParams(window.location.hash.slice(1));
-
-    if (params.has('access_token')) {
-      const accessToken = params.get('access_token');
-      sessionStorage.setItem('gh_token', accessToken);
-      window.location.hash = '';
-      location.reload();
-    }
+    // Kontrola tokenu
+    const token = sessionStorage.getItem('github_token');
 
     if (token) {
-      document.getElementById('loginBtn').style.display = 'none';
+      document.getElementById('login').style.display = 'none';
       document.getElementById('editor').style.display = 'block';
-      fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filename}`, {
-        headers: { Authorization: `token ${token}` }
-      })
-      .then(res => res.json())
-      .then(file => {
-        const content = JSON.parse(atob(file.content));
-        document.getElementById('serverName').value = content.serverName || '';
-        document.getElementById('ip').value = content.ip || '';
-        document.getElementById('description').value = content.description || '';
-        document.getElementById('rules').value = (content.rules || []).join('\n');
-        document.getElementById('email').value = content.contact?.email || '';
-        document.getElementById('discord').value = content.contact?.discord || '';
-
-        document.getElementById('saveBtn').onclick = () => {
-          const newData = {
-            serverName: document.getElementById('serverName').value,
-            ip: document.getElementById('ip').value,
-            description: document.getElementById('description').value,
-            rules: document.getElementById('rules').value.split('\n'),
-            contact: {
-              email: document.getElementById('email').value,
-              discord: document.getElementById('discord').value
-            }
-          };
-
-          const updatedContent = btoa(JSON.stringify(newData, null, 2));
-
-          fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filename}`, {
-            method: 'PUT',
-            headers: {
-              Authorization: `token ${token}`,
-              'Content-Type': 'application/json'
-            },
-            body: JSON.stringify({
-              message: 'update data.json via CMS',
-              content: updatedContent,
-              sha: file.sha
-            })
-          })
-          .then(r => r.json())
-          .then(() => alert('Uloženo!'));
-        }
-      });
+      loadData();
     }
 
-    document.getElementById('loginBtn').onclick = () => {
-      const redirect = encodeURIComponent(window.location.href);
-      window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirect}&scope=repo`;
+    document.getElementById('login').onclick = () => {
+      const redirectUri = location.href.split('?')[0];
+      const githubAuthUrl = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirectUri}&scope=repo`;
+      window.location.href = githubAuthUrl;
+    };
+
+    // Zpracovani kódu z URL
+    const urlParams = new URLSearchParams(window.location.search);
+    const code = urlParams.get('code');
+
+    if (code && !token) {
+      alert('GitHub OAuth vyžaduje backend server pro získání access tokenu. Tento krok musí být implementován na serveru.');
+    }
+
+    async function loadData() {
+      const res = await fetch('data.json');
+      const data = await res.json();
+
+      document.getElementById('serverName').value = data.serverName;
+      document.getElementById('ip').value = data.ip;
+      document.getElementById('description').value = data.description;
+      document.getElementById('rules').value = data.rules.join(', ');
+      document.getElementById('email').value = data.contact.email;
+      document.getElementById('discord').value = data.contact.discord;
+    }
+
+    document.getElementById('save').onclick = async () => {
+      const updated = {
+        serverName: document.getElementById('serverName').value,
+        ip: document.getElementById('ip').value,
+        description: document.getElementById('description').value,
+        rules: document.getElementById('rules').value.split(',').map(x => x.trim()),
+        contact: {
+          email: document.getElementById('email').value,
+          discord: document.getElementById('discord').value
+        }
+      };
+
+      alert('Uložení na GitHub potřebuje backend. Tohle je pouze ukázka.');
     }
   </script>
 </body>
