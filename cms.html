@@ -1,135 +1,65 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>CMS Editor - RandomGuy CS 1.6 Server</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #121212;
-      color: #eee;
-      margin: 0;
-      padding: 20px;
-      line-height: 1.6;
-    }
-    h1 {
-      color: #4caf50;
-      text-align: center;
-      margin-bottom: 30px;
-    }
-    label {
-      display: block;
-      max-width: 600px;
-      margin: 10px auto;
-      font-weight: bold;
-    }
-    input, textarea {
-      width: 100%;
-      background-color: #222;
-      border: 1px solid #4caf50;
-      border-radius: 4px;
-      padding: 8px;
-      color: #eee;
-      margin-top: 5px;
-      font-size: 1rem;
-      box-sizing: border-box;
-      font-weight: normal;
-    }
-    button {
-      display: block;
-      margin: 30px auto;
-      background-color: #4caf50;
-      border: none;
-      color: white;
-      padding: 10px 30px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 1.1rem;
-    }
-    button:hover {
-      background-color: #388e3c;
-    }
-  </style>
+  <meta charset="UTF-8">
+  <title>CMS Editor</title>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <h1>CMS Editor</h1>
+  <div class="container">
+    <h1>Editor obsahu</h1>
 
-  <label>
-    Název serveru:
-    <input type="text" id="serverNameInput" />
-  </label>
+    <label>Název serveru</label>
+    <input id="serverName" />
 
-  <label>
-    IP serveru:
-    <input type="text" id="ipInput" />
-  </label>
+    <label>IP adresa</label>
+    <input id="ip" />
 
-  <label>
-    Popis:
-    <textarea id="descriptionInput" rows="5"></textarea>
-  </label>
+    <label>Popis</label>
+    <textarea id="description"></textarea>
 
-  <label>
-    Pravidla (jedno pravidlo na řádek):
-    <textarea id="rulesInput" rows="5"></textarea>
-  </label>
+    <label>Pravidla (každé na nový řádek)</label>
+    <textarea id="rules"></textarea>
 
-  <label>
-    Email:
-    <input type="text" id="emailInput" />
-  </label>
+    <label>Email</label>
+    <input id="email" />
 
-  <label>
-    Discord:
-    <input type="text" id="discordInput" />
-  </label>
+    <label>Discord</label>
+    <input id="discord" />
 
-  <button id="exportBtn">Exportovat JSON</button>
+    <button onclick="save()">Stáhnout data.json</button>
+  </div>
 
   <script>
-    fetch('/VBTestweb/data.json')
-      .then(res => {
-        if (!res.ok) throw new Error('Chyba při načítání data.json');
-        return res.json();
-      })
+    fetch('data.json')
+      .then(res => res.json())
       .then(data => {
-        document.getElementById('serverNameInput').value = data.serverName || '';
-        document.getElementById('ipInput').value = data.ip || '';
-        document.getElementById('descriptionInput').value = data.description || '';
-        document.getElementById('rulesInput').value = (data.rules || []).join('\n');
-
-        const contact = data.contact || {};
-        document.getElementById('emailInput').value = contact.email || '';
-        document.getElementById('discordInput').value = contact.discord || '';
-      })
-      .catch(() => {
-        alert('Chyba při načítání dat.');
+        document.getElementById('serverName').value = data.serverName;
+        document.getElementById('ip').value = data.ip;
+        document.getElementById('description').value = data.description;
+        document.getElementById('rules').value = data.rules.join('\n');
+        document.getElementById('email').value = data.contact.email;
+        document.getElementById('discord').value = data.contact.discord;
       });
 
-    document.getElementById('exportBtn').onclick = () => {
+    function save() {
       const data = {
-        serverName: document.getElementById('serverNameInput').value,
-        ip: document.getElementById('ipInput').value,
-        description: document.getElementById('descriptionInput').value,
-        rules: document.getElementById('rulesInput').value
-          .split('\n')
-          .map(line => line.trim())
-          .filter(line => line !== ''),
+        serverName: document.getElementById('serverName').value,
+        ip: document.getElementById('ip').value,
+        description: document.getElementById('description').value,
+        rules: document.getElementById('rules').value.split('\n').filter(r => r),
         contact: {
-          email: document.getElementById('emailInput').value,
-          discord: document.getElementById('discordInput').value
+          email: document.getElementById('email').value,
+          discord: document.getElementById('discord').value
         }
       };
 
       const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const url = URL.createObjectURL(blob);
       const a = document.createElement('a');
-      a.href = url;
+      a.href = URL.createObjectURL(blob);
       a.download = 'data.json';
       a.click();
-      URL.revokeObjectURL(url);
-    };
+    }
   </script>
 </body>
 </html>
