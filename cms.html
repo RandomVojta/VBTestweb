@@ -2,63 +2,111 @@
 <html lang="cs">
 <head>
   <meta charset="UTF-8">
-  <title>CMS Editor</title>
-  <link rel="stylesheet" href="style.css">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>RandomGuy CMS Editor</title>
+  <style>
+    body { font-family: sans-serif; padding: 2rem; max-width: 800px; margin: auto; background: #f4f4f4; }
+    h1 { color: #333; }
+    input, textarea { width: 100%; padding: 0.5rem; margin-bottom: 1rem; }
+    button { padding: 0.5rem 1rem; font-size: 1rem; cursor: pointer; }
+    #loginBtn { background: #2ea44f; color: white; border: none; }
+    #saveBtn { background: #0366d6; color: white; border: none; }
+  </style>
 </head>
 <body>
-  <div class="container">
-    <h1>Editor obsahu</h1>
+  <h1>RandomGuy CMS Editor</h1>
 
+  <button id="loginBtn">Přihlásit se přes GitHub</button>
+
+  <div id="editor" style="display:none">
     <label>Název serveru</label>
-    <input id="serverName" />
+    <input id="serverName">
 
     <label>IP adresa</label>
-    <input id="ip" />
+    <input id="ip">
 
     <label>Popis</label>
     <textarea id="description"></textarea>
 
-    <label>Pravidla (každé na nový řádek)</label>
+    <label>Pravidla (oddělená novým řádkem)</label>
     <textarea id="rules"></textarea>
 
     <label>Email</label>
-    <input id="email" />
+    <input id="email">
 
     <label>Discord</label>
-    <input id="discord" />
+    <input id="discord">
 
-    <button onclick="save()">Stáhnout data.json</button>
+    <button id="saveBtn">💾 Uložit změny</button>
   </div>
 
   <script>
-    fetch('data.json')
+    const clientId = 'TVUJ_CLIENT_ID'; // ← vlož svůj Client ID z GitHub OAuth
+    const repo = 'RandomGuyCMS';       // ← název tvého repozitáře
+    const owner = 'tvuj-username';     // ← tvůj GitHub username
+    const filename = 'data.json';
+
+    const token = sessionStorage.getItem('gh_token');
+    const params = new URLSearchParams(window.location.hash.slice(1));
+
+    if (params.has('access_token')) {
+      const accessToken = params.get('access_token');
+      sessionStorage.setItem('gh_token', accessToken);
+      window.location.hash = '';
+      location.reload();
+    }
+
+    if (token) {
+      document.getElementById('loginBtn').style.display = 'none';
+      document.getElementById('editor').style.display = 'block';
+      fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filename}`, {
+        headers: { Authorization: `token ${token}` }
+      })
       .then(res => res.json())
-      .then(data => {
-        document.getElementById('serverName').value = data.serverName;
-        document.getElementById('ip').value = data.ip;
-        document.getElementById('description').value = data.description;
-        document.getElementById('rules').value = data.rules.join('\n');
-        document.getElementById('email').value = data.contact.email;
-        document.getElementById('discord').value = data.contact.discord;
-      });
+      .then(file => {
+        const content = JSON.parse(atob(file.content));
+        document.getElementById('serverName').value = content.serverName || '';
+        document.getElementById('ip').value = content.ip || '';
+        document.getElementById('description').value = content.description || '';
+        document.getElementById('rules').value = (content.rules || []).join('\n');
+        document.getElementById('email').value = content.contact?.email || '';
+        document.getElementById('discord').value = content.contact?.discord || '';
 
-    function save() {
-      const data = {
-        serverName: document.getElementById('serverName').value,
-        ip: document.getElementById('ip').value,
-        description: document.getElementById('description').value,
-        rules: document.getElementById('rules').value.split('\n').filter(r => r),
-        contact: {
-          email: document.getElementById('email').value,
-          discord: document.getElementById('discord').value
+        document.getElementById('saveBtn').onclick = () => {
+          const newData = {
+            serverName: document.getElementById('serverName').value,
+            ip: document.getElementById('ip').value,
+            description: document.getElementById('description').value,
+            rules: document.getElementById('rules').value.split('\n'),
+            contact: {
+              email: document.getElementById('email').value,
+              discord: document.getElementById('discord').value
+            }
+          };
+
+          const updatedContent = btoa(JSON.stringify(newData, null, 2));
+
+          fetch(`https://api.github.com/repos/${owner}/${repo}/contents/${filename}`, {
+            method: 'PUT',
+            headers: {
+              Authorization: `token ${token}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              message: 'update data.json via CMS',
+              content: updatedContent,
+              sha: file.sha
+            })
+          })
+          .then(r => r.json())
+          .then(() => alert('Uloženo!'));
         }
-      };
+      });
+    }
 
-      const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
-      const a = document.createElement('a');
-      a.href = URL.createObjectURL(blob);
-      a.download = 'data.json';
-      a.click();
+    document.getElementById('loginBtn').onclick = () => {
+      const redirect = encodeURIComponent(window.location.href);
+      window.location.href = `https://github.com/login/oauth/authorize?client_id=${clientId}&redirect_uri=${redirect}&scope=repo`;
     }
   </script>
 </body>
