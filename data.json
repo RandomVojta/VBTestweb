@@ -1,14 +1,16 @@
 {
   "serverName": "RandomGuy CS 1.6 Server",
   "ip": "123.45.67.89:27015",
-  "description": "Vítejte na RandomGuy CS 1.6 serveru! Přidejte se k nám a bavte se.",
+  "description": "Vítejte na našem CS 1.6 serveru! Přidej se k oldschool komunitě, bez zbytečných pluginů a pay-to-win.",
   "rules": [
     "Žádný cheatování",
     "Respektuj ostatní hráče",
-    "Udržuj přátelskou atmosféru"
+    "Nepoužívej vulgarismy",
+    "Žádný spam v chatu",
+    "Dodržuj pokyny adminů"
   ],
   "contact": {
-    "email": "kontakt@randomguy.cz",
-    "discord": "RandomGuy#1234"
+    "email": "admin@randomguycs.cz",
+    "discord": "discord.gg/randomguy"
   }
 }
