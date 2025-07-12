@@ -13,14 +13,14 @@ const serverConfig = {
   contactEmail: "admin@randomguy.cz",
   news: [
     {
-      date: "2025-07-10",
-      title: "Nová mapa de_mirage přidána!",
-      content: "Server nyní podporuje populární mapu de_mirage."
+      date: "2025-07-11",
+      title: "Nová mapa fy_pool_day přidána!",
+      content: "Server nyní podporuje populární mapu fy_pool_day."
     },
     {
-      date: "2025-06-20",
-      title: "Upgrade serverového hardwaru",
-      content: "Zvýšili jsme výkon serveru pro lepší stabilitu."
+      date: "2025-07-11",
+      title: "Spuštení serveru CS 1.6",
+      content: "Tady to začalo."
     }
   ],
   gametrackerImageUrl: "https://cache.gametracker.com/server_info/cs16.randomguy.cz:27015/b_350_20_692108_381007_ffffff_333333.png"
