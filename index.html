@@ -1,100 +1,60 @@
 <!DOCTYPE html>
 <html lang="cs">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta charset="UTF-8">
   <title>RandomGuy CS 1.6 Server</title>
-  <style>
-    body {
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      background-color: #121212;
-      color: #eee;
-      margin: 0;
-      padding: 20px;
-      line-height: 1.6;
-    }
-    header, footer {
-      text-align: center;
-      background-color: #1f1f1f;
-      padding: 15px 10px;
-      border-radius: 8px;
-      margin-bottom: 25px;
-      box-shadow: 0 0 10px #4caf50aa;
-    }
-    h1, h3 {
-      color: #4caf50;
-      margin-bottom: 10px;
-    }
-    p, ul {
-      max-width: 600px;
-      margin: 0 auto 20px auto;
-    }
-    ul {
-      list-style: disc inside;
-    }
-    li {
-      margin-bottom: 8px;
-    }
-    strong {
-      color: #81c784;
-    }
-    a {
-      color: #81c784;
-      text-decoration: none;
-    }
-    a:hover {
-      text-decoration: underline;
-    }
-  </style>
+  <link rel="stylesheet" href="style.css">
 </head>
 <body>
   <header>
-    <h1 id="serverName">Načítání...</h1>
+    <h1 id="serverName">RandomGuy CS 1.6 Server</h1>
+    <p id="ip">IP: 123.45.67.89:27015</p>
   </header>
 
-  <main>
-    <p><strong>IP serveru:</strong> <span id="ip">Načítání...</span></p>
-    <p id="description">Načítání popisu...</p>
+  <div class="container">
+    <section class="section">
+      <h2>O serveru</h2>
+      <p id="description"></p>
+    </section>
 
-    <h3>Pravidla serveru:</h3>
-    <ul id="rules"></ul>
+    <section class="section">
+      <h2>Pravidla</h2>
+      <ul id="rules"></ul>
+    </section>
 
-    <h3>Kontakt:</h3>
-    <ul>
-      <li>Email: <span id="contactEmail"></span></li>
-      <li>Discord: <span id="contactDiscord"></span></li>
-    </ul>
-  </main>
+    <section class="section">
+      <h2>Kontakt</h2>
+      <p>Email: <a id="email" href=""></a></p>
+      <p>Discord: <a id="discord" href=""></a></p>
+    </section>
+  </div>
 
   <footer>
-    <p>© 2025 RandomGuy</p>
+    &copy; 2025 RandomGuy CS Server
   </footer>
 
   <script>
-    fetch('/VBTestweb/data.json')
-      .then(response => {
-        if (!response.ok) throw new Error('Chyba při načítání data.json');
-        return response.json();
-      })
+    fetch('data.json')
+      .then(res => res.json())
       .then(data => {
-        document.getElementById('serverName').textContent = data.serverName || 'Název chybí';
-        document.getElementById('ip').textContent = data.ip || 'IP chybí';
-        document.getElementById('description').textContent = data.description || 'Popis chybí';
+        document.getElementById('serverName').textContent = data.serverName;
+        document.getElementById('ip').textContent = 'IP: ' + data.ip;
+        document.getElementById('description').textContent = data.description;
 
-        const rulesList = document.getElementById('rules');
-        rulesList.innerHTML = '';
-        (data.rules || []).forEach(rule => {
+        const rulesEl = document.getElementById('rules');
+        data.rules.forEach(rule => {
           const li = document.createElement('li');
           li.textContent = rule;
-          rulesList.appendChild(li);
+          rulesEl.appendChild(li);
         });
 
-        const contact = data.contact || {};
-        document.getElementById('contactEmail').textContent = contact.email || 'Email chybí';
-        document.getElementById('contactDiscord').textContent = contact.discord || 'Discord chybí';
-      })
-      .catch(error => {
-        document.body.innerHTML = `<p style="color:red;">${error.message}</p>`;
+        const emailEl = document.getElementById('email');
+        emailEl.textContent = data.contact.email;
+        emailEl.href = 'mailto:' + data.contact.email;
+
+        const discordEl = document.getElementById('discord');
+        discordEl.textContent = data.contact.discord;
+        discordEl.href = 'https://' + data.contact.discord;
       });
   </script>
 </body>
