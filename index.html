@@ -64,6 +64,9 @@
     ul {
       padding-left: 20px;
     }
+    li {
+      margin-bottom: 8px;
+    }
     code {
       background: #e0e7f1;
       padding: 6px 10px;
@@ -84,6 +87,16 @@
     a {
       color: #004080;
     }
+    .news-item {
+      margin-bottom: 15px;
+      padding-bottom: 10px;
+      border-bottom: 1px solid #ddd;
+    }
+    .news-date {
+      color: #666;
+      font-size: 0.85rem;
+      margin-bottom: 5px;
+    }
   </style>
 </head>
 <body>
@@ -97,6 +110,7 @@
   <a href="#status">Status</a>
   <a href="#info">Info</a>
   <a href="#connect">Připojit se</a>
+  <a href="#news">Aktuality</a>
   <a href="#contact">Kontakt</a>
 </nav>
 
@@ -104,28 +118,28 @@
 
   <section id="status">
     <h2>Online status serveru</h2>
-    <!-- Vlož sem svůj GameTracker widget (nahrad tento obrázek) -->
-    <img src="https://cache.gametracker.com/server_info/your-server-ip:port/b_350_20_692108_381007_ffffff_333333.png" alt="Status serveru RandomGuy CS 1.6" style="max-width:100%; height:auto; border-radius:6px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);" />
+    <img id="gametracker-widget" alt="Status serveru RandomGuy CS 1.6" style="max-width:100%; height:auto; border-radius:6px; box-shadow: 0 2px 6px rgba(0,0,0,0.15);" />
   </section>
 
   <section id="info">
     <h2>Informace o serveru</h2>
-    <ul>
-      <li><strong>Adresa:</strong> cs16.randomguy.cz:27015</li>
-      <li><strong>Mapy:</strong> de_dust2, de_inferno, cs_assault …</li>
-      <li><strong>Pluginy:</strong> MetaMod, AMX Mod X, VIP systémy …</li>
-    </ul>
+    <ul id="rules-list"></ul>
   </section>
 
   <section id="connect">
     <h2>Jak se připojit</h2>
     <p>V CS 1.6 otevři konzoli (klávesa <code>~</code>) a napiš:</p>
-    <code>connect cs16.randomguy.cz:27015</code>
+    <code id="connect-command"></code>
+  </section>
+
+  <section id="news">
+    <h2>Aktuality</h2>
+    <div id="news-list"></div>
   </section>
 
   <section id="contact">
     <h2>Kontakt</h2>
-    <p>Máte dotazy? Napište nám na e-mail: <a href="mailto:admin@randomguy.cz">admin@randomguy.cz</a></p>
+    <p>Máte dotazy? Napište nám na e-mail: <a href="#" id="contact-email"></a></p>
   </section>
 
 </div>
@@ -133,6 +147,46 @@
 <footer>
   &copy; 2025 RandomGuy CS 1.6 Server – Všechna práva vyhrazena.
 </footer>
+
+<script src="config.js"></script>
+<script>
+  // Naplnění dat z config.js
+  document.getElementById('gametracker-widget').src = serverConfig.gametrackerImageUrl;
+  document.getElementById('connect-command').textContent = `connect ${serverConfig.ip}:${serverConfig.port}`;
+
+  const rulesList = document.getElementById('rules-list');
+  serverConfig.rules.forEach(rule => {
+    const li = document.createElement('li');
+    li.textContent = rule;
+    rulesList.appendChild(li);
+  });
+
+  const contactEmail = document.getElementById('contact-email');
+  contactEmail.href = `mailto:${serverConfig.contactEmail}`;
+  contactEmail.textContent = serverConfig.contactEmail;
+
+  const newsList = document.getElementById('news-list');
+  serverConfig.news.forEach(item => {
+    const div = document.createElement('div');
+    div.className = 'news-item';
+
+    const date = document.createElement('div');
+    date.className = 'news-date';
+    date.textContent = new Date(item.date).toLocaleDateString('cs-CZ', {year:'numeric', month:'long', day:'numeric'});
+
+    const title = document.createElement('h3');
+    title.textContent = item.title;
+
+    const content = document.createElement('p');
+    content.textContent = item.content;
+
+    div.appendChild(date);
+    div.appendChild(title);
+    div.appendChild(content);
+
+    newsList.appendChild(div);
+  });
+</script>
 
 </body>
 </html>
